@@ -1,9 +1,10 @@
 package com.chewingk.pitter.service.impl;
 
 import com.chewingk.pitter.api.dto.EnterRequestDto;
+import com.chewingk.pitter.api.dto.ExitRequestDto;
 import com.chewingk.pitter.api.service.PitterParkerService;
-import com.chewingk.pitter.infrastructure.repository.ParkingDetailRepository;
 import com.chewingk.pitter.service.model.domain.ParkingDetail;
+import com.chewingk.pitter.service.repository.ParkingDetailRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +25,16 @@ public class PitterParkerServiceImpl implements PitterParkerService {
                                   .entryTime(Instant.now())
                                   .build();
         // save to db
-        ParkingDetail savedParkingDetail = parkingDetailRepository.save(parkingDetail);
+        ParkingDetail savedParkingDetail = parkingDetailRepository.enter(parkingDetail);
         // return
         return savedParkingDetail.getEntryTime().toEpochMilli();
+    }
+
+    @Override
+    public void exit(ExitRequestDto requestDto) {
+        // record plate
+        // delete from db
+        // return
+        parkingDetailRepository.exit(requestDto.getLicensePlate());
     }
 }

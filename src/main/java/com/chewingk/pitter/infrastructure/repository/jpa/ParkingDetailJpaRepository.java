@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ParkingDetailJpaRepository extends JpaRepository<ParkingDetailPo, Integer> {
 
+    void deleteByLicensePlate(String licensePlate);
 }

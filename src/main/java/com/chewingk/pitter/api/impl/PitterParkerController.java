@@ -2,6 +2,7 @@ package com.chewingk.pitter.api.impl;
 
 import com.chewingk.pitter.api.dto.EnterRequestDto;
 import com.chewingk.pitter.api.dto.EnterResponseDto;
+import com.chewingk.pitter.api.dto.ExitRequestDto;
 import com.chewingk.pitter.api.service.PitterParkerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,5 +24,8 @@ public class PitterParkerController {
                    .build();
     }
 
-
+    @PostMapping("/exit")
+    public void exitPitter(@RequestBody ExitRequestDto requestDto) {
+        pitterParkerService.exit(requestDto);
+    }
 }
