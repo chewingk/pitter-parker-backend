@@ -1,6 +1,7 @@
 package com.chewingk.pitter.api.impl;
 
 import com.chewingk.pitter.api.dto.EnterRequestDto;
+import com.chewingk.pitter.api.dto.EnterResponseDto;
 import com.chewingk.pitter.api.service.PitterParkerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,8 +16,11 @@ public class PitterParkerController {
 
     @PostMapping("/enter")
     @ResponseStatus(HttpStatus.CREATED)
-    public void enterPitter(@RequestBody EnterRequestDto requestDto) {
-        pitterParkerService.enter(requestDto);
+    public EnterResponseDto enterPitter(@RequestBody EnterRequestDto requestDto) {
+        long entryTime = pitterParkerService.enter(requestDto);
+        return EnterResponseDto.builder()
+                   .entryTime(entryTime)
+                   .build();
     }
 
 

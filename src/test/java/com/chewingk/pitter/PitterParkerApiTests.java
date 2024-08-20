@@ -1,6 +1,8 @@
 package com.chewingk.pitter;
 
 import com.chewingk.pitter.api.dto.EnterRequestDto;
+import com.chewingk.pitter.infrastructure.model.persistente.ParkingDetailPo;
+import com.chewingk.pitter.infrastructure.repository.jpa.ParkingDetailJpaRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +12,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
@@ -22,6 +29,9 @@ class PitterParkerApiTests {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ParkingDetailJpaRepository parkingDetailJpaRepository;
 
     private ObjectMapper objectMapper;
 
@@ -35,11 +45,17 @@ class PitterParkerApiTests {
                                        .licensePlate("粤A00001")
                                        .build();
 
-        mockMvc.perform(post("/pitter-parker/enter")
-                            .accept(MediaType.APPLICATION_JSON)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(requestDto)))
-               .andExpect(status().is(201));
+        ResultActions resultActions = mockMvc.perform(post("/pitter-parker/enter")
+                                                          .accept(MediaType.APPLICATION_JSON)
+                                                          .contentType(MediaType.APPLICATION_JSON)
+                                                          .content(objectMapper.writeValueAsString(requestDto)));
+
+        List<ParkingDetailPo> parkingDetailPos = parkingDetailJpaRepository.findAll();
+        ParkingDetailPo savedParkingDetailPo = parkingDetailPos.get(0);
+        resultActions
+            .andExpect(status().is(201))
+            .andExpect(jsonPath("$.entryTime").value(savedParkingDetailPo.getEntryTime().toEpochMilli()));
+        assertThat(savedParkingDetailPo.getLicensePlate()).isEqualTo("粤A00001");
     }
 
 }
